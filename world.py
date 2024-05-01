@@ -17,7 +17,7 @@ class World():
 
         self.map = Map(py.Vector2(0,0), "artwork/map.png") # creates map
         self.game_over = GameOver(py.Vector2(0,0), "artwork/gameover.png")
-        self.player = Player(py.Vector2(self.width / 2, self.height / 2), "artwork/player.png")
+        self.player = Player()
         
         self.enemy_1 = Enemy(py.Vector2(800,200), "artwork/evilbunny.png")
         self.enemy_2 = Enemy(py.Vector2(700,200), "artwork/evilbunny.png")
@@ -34,12 +34,21 @@ class World():
         for enemy in self.enemies: # updates enemies 
             enemy.update(dt)
 
-        self.HitTesting() # testing for collisions between player and enemies
+        self.HitTesting() # testing for collisions between player and
 
 
     def draw(self, display):
         self.map.draw(display) # draws map
         self.player.draw(display) # draws player
+
+
+        if self.player.status == 'PlayerSwordAttack':
+            self.player.swing(display)
+            self.player.status = 'PlayerIdle'
+
+        if self.player.status == 'PlayerBowAttack':
+            self.player.shoot(display)
+            self.player.status = 'PlayerIdle'
 
         # draws all the enemies
         for enemy in self.enemies:
@@ -58,7 +67,8 @@ class World():
         self.player.move(movement_vector, dt)
 
     def move_enemy(self, movement_vector, dt):
-        self.enemy_1.move(movement_vector, dt)
+        for enemy in self.enemies:
+            enemy.move(movement_vector, dt)
 
     # if instanced player swords rectangle collides with any enemy
     def HitTesting (self):
