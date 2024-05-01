@@ -4,7 +4,7 @@ import random
 
 py.init()
 
-# display variables
+# display variablesa
 width = 1000
 height = 800
 display = py.display.set_mode((width,height))

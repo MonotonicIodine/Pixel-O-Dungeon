@@ -12,7 +12,7 @@ class Enemy(Entity):
 
 
         self.image = py.image.load(self.image_path).convert() # change to _alpha
-        self.enemy_rect = self.image.get_rect()
+        self.enemy_rect = self.image.get_rect() # converts image for rectangle
 
         self.movement_speed = 5
         self.hit_points = 50
@@ -21,17 +21,18 @@ class Enemy(Entity):
 
     # Updates the location of the enemy rectangle location
     def update(self, dt):
-        random_num = random.randint(-2, 1)
-        enemy_vector = py.Vector2(0,0)
-
-        if random_num == 1:
-            enemy_vector.x += 1
-        if random_num == -1:
-            enemy_vector.x -= 1
-        if random_num == -2:
-            enemy_vector.y -= 1
-        if random_num == 0:
-            enemy_vector.y += 1
+        # random_num = random.randint(-2, 1)
+        # enemy_vector = py.Vector2(0,0)
+        # if random_num == 1:
+        #     enemy_vector.x += 1
+        # if random_num == -1:
+        #     enemy_vector.x -= 1
+        # if random_num == -2:
+        #     enemy_vector.y -= 1
+        # if random_num == 0:
+        #     enemy_vector.y += 1
+        if self.hit_points <= 0:
+            self.kill()
         self.enemy_rect.x = self.position.x
         self.enemy_rect.y = self.position.y
         pass
