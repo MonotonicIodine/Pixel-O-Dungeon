@@ -2,9 +2,6 @@ import pygame as py
 from player import Player
 from enemy import Enemy
 from map import Map
-from EvilSpawner import EvilSpawner
-from collisionmanager import CollisionHandler
-from weapon import Sword
 from gameover import GameOver
 
 # class for world, is the main place where drawing to display happens
@@ -17,8 +14,11 @@ class World():
 
         self.map = Map(py.Vector2(0,0), "artwork/map.png") # creates map
         self.game_over = GameOver(py.Vector2(0,0), "artwork/gameover.png")
+
+        # instantiates player
         self.player = Player()
         
+        # instantiates enemies
         self.enemy_1 = Enemy(py.Vector2(800,200), "artwork/evilbunny.png")
         self.enemy_2 = Enemy(py.Vector2(700,200), "artwork/evilbunny.png")
         self.enemy_3 = Enemy(py.Vector2(600,200), "artwork/evilbunny.png")
@@ -31,16 +31,17 @@ class World():
     def update(self, dt):
         self.player.update(dt) # updates player
 
-        for enemy in self.enemies: # updates enemies 
+        for enemy in self.enemies: # updates all enemies 
             enemy.update(dt)
 
         self.HitTesting() # testing for collisions between player and
+        self.check_world_bounds()
+        self.check_enemy_bounds()
 
-
+    # method for drawing to display
     def draw(self, display):
         self.map.draw(display) # draws map
         self.player.draw(display) # draws player
-
 
         if self.player.status == 'PlayerSwordAttack':
             self.player.swing(display)
@@ -54,23 +55,11 @@ class World():
         for enemy in self.enemies:
             enemy.draw(display)
         
-        self.check_world_bounds() # checks player bounds
-        self.check_enemy_bounds() # checks enemy bounds
-
         # checks if player has died AND then draws game over screen
         if self.player.hit_points <= 0:
             self.game_over.draw(display)
 
-
-    # method to move player based on movement vector args given in program main
-    def move_player(self, movement_vector, dt):
-        self.player.move(movement_vector, dt)
-
-    def move_enemy(self, movement_vector, dt):
-        for enemy in self.enemies:
-            enemy.move(movement_vector, dt)
-
-    # if instanced player swords rectangle collides with any enemy
+    # if instanced player rectangle collides with any enemy rect
     def HitTesting (self):
         for enemy in self.enemies:
             if self.player.player_rect.colliderect(enemy.enemy_rect):
@@ -92,6 +81,7 @@ class World():
         if self.player.position.y <= 0:
             self.player.position.y = 0
 
+    # bounds for enemies
     def check_enemy_bounds(self):
         for enemy in self.enemies:
             if enemy.position.x >= self.width - enemy.image.get_width():
@@ -102,13 +92,3 @@ class World():
                 enemy.position.y = self.height - enemy.image.get_height()
             if enemy.position.y <= 0:
                 enemy.position.y = 0
-
-
-        # if self.enemy_1.position.x >= self.width - self.enemy_1.image.get_width():
-        #     self.enemy_1.position.x = self.width - self.enemy_1.image.get_width()
-        # if self.enemy_1.position.x <= 0:
-        #     self.enemy_1.position.x = 0
-        # if self.enemy_1.position.y >= self.height - self.enemy_1.image.get_height():
-        #     self.enemy_1.position.y = self.height - self.enemy_1.image.get_height()
-        # if self.enemy_1.position.y <= 0:
-        #     self.enemy_1.position.y = 0

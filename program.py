@@ -1,11 +1,10 @@
 import pygame as py
 from world import World
-import random
 
 py.init()
 
 # display variables
-width = 1000
+width = 1000    
 height = 800
 display = py.display.set_mode((width,height))
 world = World(width, height)

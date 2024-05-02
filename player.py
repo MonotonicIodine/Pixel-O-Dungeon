@@ -1,56 +1,65 @@
 import pygame as py
 from weapon import Sword,Bow
-from entity import Entity
 
 #  class Player, will be the interactive entity for user to play
-
 class Player():
     def __init__(self):
-        self.image_path = "artwork/player.png"
-        self.image = py.image.load(self.image_path).convert_alpha() # change to _alpha
-        self.player_rect = self.image.get_rect() # rectangle of player
-        self.position = py.Vector2(0,0)
+        self.image_path = "artwork/player/idle.png"
+        self.image = py.image.load(self.image_path).convert_alpha() # _alpha for transparency
+        self.player_rect = self.image.get_rect() # gets rectangle of player
+        self.position = py.Vector2(400,600)
 
         # player attributes
         self.movement_speed = 5 
-        self.hit_points = 20
+        self.hit_points = 35
 
-        #graphics for player
+        #image variables/paths for player
         self.status = 'idle'  # auto set to idle
         self.status_path = 'artwork/player/' + self.status + '.png'
 
-        py.joystick.init() # inits joystick controls
-        self.joystick = py.joystick.Joystick(0)
-        self.joystick.init()
-        pass
+        # guard clause to check if player has controller
+        self.has_controller = False
+
+        if py.joystick.get_count() > 0:
+            py.joystick.init() # inits joystick controls
+            self.joystick = py.joystick.Joystick(0)
+            self.joystick.init()
+
+            self.has_controller = True
+        else:
+            pass
 
     # movement controls + setting status for animation
     def input(self):
 
-        # 0 is A, 1 is B, 2 is X, 3 is Y, 4 is LB
-        # 5 is RB
+        # Only tested with Xbox controller
+        # 0 is A, 1 is B, 2 is X, 3 is Y, 4 is LB, 5 is RB
+        if self.has_controller == True:
+            if self.joystick:
+                joystick_x = self.joystick.get_axis(0)
+                joystick_y = self.joystick.get_axis(1)
+                sword_trigger = self.joystick.get_button(5)  # this RB button
+                bow_trigger = self.joystick.get_button(4)  # this LB button
 
-        if self.joystick:
-            joystick_x = self.joystick.get_axis(0)
-            joystick_y = self.joystick.get_axis(1)
-            trigger = self.joystick.get_button(5)  # this RB button
+                if abs(joystick_x) > 0.1:
+                    self.position.x += joystick_x * self.movement_speed
+                    self.status = 'PlayerRight' if joystick_x > 0 else 'PlayerLeft'
 
-            if abs(joystick_x) > 0.1:
-                self.position.x += joystick_x * self.movement_speed
-                self.status = 'PlayerRight' if joystick_x > 0 else 'PlayerLeft'
+                if abs(joystick_y) > 0.1:
+                    self.position.y += joystick_y * self.movement_speed
+                    self.status = 'PlayerDown' if joystick_y > 0 else 'PlayerUp'
 
-            if abs(joystick_y) > 0.1:
-                self.position.y += joystick_y * self.movement_speed
-                self.status = 'PlayerDown' if joystick_y > 0 else 'PlayerUp'
-
-            if trigger:
-                self.status = 'PlayerSwordAttack'
+                if sword_trigger:
+                    self.status = 'PlayerSwordAttack'
+                if bow_trigger:
+                    self.status = 'PlayerBowAttack'
 
 
+        # player movement controls
+        # setting status for future image uses for direction of player
         keys = py.key.get_pressed()
-        # movement controls
         if keys[py.K_w] or keys[py.K_UP]:
-            self.position.y -= self.movement_speed # goes up
+            self.position.y -= self.movement_speed  # goes up
             self.status = 'PlayerUp'
 
         if keys[py.K_s] or keys[py.K_DOWN]:
@@ -94,12 +103,10 @@ class Player():
 
     # Updates the location of the player rectangle location
     def update(self, dt):
-        self.player_rect.x = self.position.x
-        self.player_rect.y = self.position.y
-        self.input()
-        self.get_status()
-        print(self.status)
-        #print(self.status_path)
+        self.player_rect.x = self.position.x # updating player rectangle location 
+        self.player_rect.y = self.position.y # updating player rectangle location
+        self.input() # input controls
+        self.get_status() # gets status
         pass
 
     # method to draw player on display when called
@@ -111,8 +118,6 @@ class Player():
         self.position.x += (movement_vector.x * self.movement_speed) * dt
         self.position.y += (movement_vector.y * self.movement_speed) * dt
     
-
-
     # method to draw sword
     def swing(self, display):
         self.player_sword = Sword() # this is weird placement for sword constructor, there until tested w/ collisions

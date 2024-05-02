@@ -25,7 +25,7 @@ class Sword(Weapon):
     # constructor for Sword
     def __init__(self):
         self.image_path = "artwork/sword.png"
-        self.image = py.image.load(self.image_path).convert() # change to _alpha
+        self.image = py.image.load(self.image_path).convert_alpha() # change to _alpha
         self.sword_image_rect = self.image.get_rect() # converts image for rectangle
 
         self.damage = 20
@@ -34,7 +34,6 @@ class Sword(Weapon):
 
 #baby class
 class Bow(Weapon):
-    # bow will not do anything rn
     # constructor for Bow
     def __init__(self):
         self.image_path = "artwork/bow.png"
@@ -42,12 +41,11 @@ class Bow(Weapon):
         self.damage = 0
     pass
 
-
+#baby class
 class Claws(Weapon):
-    
     # constructor for Claws
     def __init__(self):
-        self.image_path = "artwork/player1.png"
+        self.image_path = "artwork/smallplayer.png"
         self.image = py.image.load(self.image_path).convert_alpha()
         self.damage = 10
     pass
